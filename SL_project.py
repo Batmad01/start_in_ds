@@ -7,6 +7,7 @@ from plotly.offline import plot
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import streamlit as st
+import openpyxl
 
 st.title('Исследование динамики зарплат в России')
 
