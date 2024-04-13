@@ -60,11 +60,12 @@ fig = px.line(df_melt_sorted, x=df_melt_sorted.index, y = 'payment_diff', color=
 #fig.show()
 st.plotly_chart(fig)
 
+infl['inflation'] = infl['inflation']*100
 
 fig = px.bar(infl, x='year', y='inflation',
              title="Изменение инфляции в РФ по годам",
              labels={
-                     "inflation": "Инфляция",
+                     "inflation": "Инфляция, %",
                      "year": "Год"  
                  })
 #fig.show()
