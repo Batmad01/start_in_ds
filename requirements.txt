@@ -50,3 +50,4 @@ validators==0.20.0
 watchdog==3.0.0
 zipp==3.15.0
 plotly==5.3.1
+openpyxl==3.1.2
