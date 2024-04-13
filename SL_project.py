@@ -10,8 +10,8 @@ import streamlit as st
 
 st.title('Исследование динамики зарплат в России')
 
-df = pd.read_excel('C:/Users/dimas/Jupyter/Stepik/payments_ru.xlsx')
-infl = pd.read_excel('C:/Users/dimas/Jupyter/Stepik/inflation.xlsx')
+df = pd.read_excel('payments_ru.xlsx')
+infl = pd.read_excel('inflation.xlsx')
 infl['inflation'] = infl['inflation'] / 100
 #df.head()
 
