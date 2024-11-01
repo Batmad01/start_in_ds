@@ -1,56 +1,56 @@
-# coding: windows-1251
+# coding: utf-8
 import pandas as pd
 import asyncio
 import utils
 
-# получаем список всех хабов
+# ГЇГ®Г«ГіГ·Г ГҐГ¬ Г±ГЇГЁГ±Г®ГЄ ГўГ±ГҐГµ ГµГ ГЎГ®Гў
 hubs = utils.parse_habr_hubs()
-url_lst = hubs['URL'].tolist()  # список всех url
+url_lst = hubs['URL'].tolist()  # Г±ГЇГЁГ±Г®ГЄ ГўГ±ГҐГµ url
 
-# добавление количества страниц
-res = asyncio.run(utils.process_urls(url_lst))  # получаем количество страниц
-hubs.insert(5, 'Pages_cnt', res)  # добавляем количество страниц в датафрейм хабов
+# Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГҐ ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ  Г±ГІГ°Г Г­ГЁГ¶
+res = asyncio.run(utils.process_urls(url_lst))  # ГЇГ®Г«ГіГ·Г ГҐГ¬ ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® Г±ГІГ°Г Г­ГЁГ¶
+hubs.insert(5, 'Pages_cnt', res)  # Г¤Г®ГЎГ ГўГ«ГїГҐГ¬ ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® Г±ГІГ°Г Г­ГЁГ¶ Гў Г¤Г ГІГ ГґГ°ГҐГ©Г¬ ГµГ ГЎГ®Гў
 
-# Cохраняем датафрейм со ссылками на хабы
+# CГ®ГµГ°Г Г­ГїГҐГ¬ Г¤Г ГІГ ГґГ°ГҐГ©Г¬ Г±Г® Г±Г±Г»Г«ГЄГ Г¬ГЁ Г­Г  ГµГ ГЎГ»
 hubs.to_excel('hubs_urls.xlsx', index_label='ID')
 
-# ## Парсер ссылок на статьи внутри хабов
+# ## ГЏГ Г°Г±ГҐГ° Г±Г±Г»Г«Г®ГЄ Г­Г  Г±ГІГ ГІГјГЁ ГўГ­ГіГІГ°ГЁ ГµГ ГЎГ®Гў
 
-df_full = pd.DataFrame(columns=['Title', 'URL', 'Hub'])  # Создание итогового DataFrame с хабами
+df_full = pd.DataFrame(columns=['Title', 'URL', 'Hub'])  # Г‘Г®Г§Г¤Г Г­ГЁГҐ ГЁГІГ®ГЈГ®ГўГ®ГЈГ® DataFrame Г± ГµГ ГЎГ Г¬ГЁ
 
-# Запуск асинхронной функции сбора статей внутри хабов
+# Г‡Г ГЇГіГ±ГЄ Г Г±ГЁГ­ГµГ°Г®Г­Г­Г®Г© ГґГіГ­ГЄГ¶ГЁГЁ Г±ГЎГ®Г°Г  Г±ГІГ ГІГҐГ© ГўГ­ГіГІГ°ГЁ ГµГ ГЎГ®Гў
 for i in range(len(hubs)):
     hub_url = hubs.iloc[i]['URL'] + 'articles/'
     df = asyncio.run(utils.parse_habr_articles_in_hub(hub_url, df_full))
     df_full = pd.concat([df_full, df], ignore_index=True)
 
-# Смотрим сколько всего статей получилось собрать
+# Г‘Г¬Г®ГІГ°ГЁГ¬ Г±ГЄГ®Г«ГјГЄГ® ГўГ±ГҐГЈГ® Г±ГІГ ГІГҐГ© ГЇГ®Г«ГіГ·ГЁГ«Г®Г±Гј Г±Г®ГЎГ°Г ГІГј
 if df_full is not None:
-    print(f"Всего собрано статей: {len(df_full)}")
+    print(f"Г‚Г±ГҐГЈГ® Г±Г®ГЎГ°Г Г­Г® Г±ГІГ ГІГҐГ©: {len(df_full)}")
 
 
-# Убираем дубликаты (если они где-то пробрались)
+# Г“ГЎГЁГ°Г ГҐГ¬ Г¤ГіГЎГ«ГЁГЄГ ГІГ» (ГҐГ±Г«ГЁ Г®Г­ГЁ ГЈГ¤ГҐ-ГІГ® ГЇГ°Г®ГЎГ°Г Г«ГЁГ±Гј)
 hubs_full = df_full.drop_duplicates(subset='URL')
 
-# Сохраняем итоговый датафрейм со ссылками на все статьи
+# Г‘Г®ГµГ°Г Г­ГїГҐГ¬ ГЁГІГ®ГЈГ®ГўГ»Г© Г¤Г ГІГ ГґГ°ГҐГ©Г¬ Г±Г® Г±Г±Г»Г«ГЄГ Г¬ГЁ Г­Г  ГўГ±ГҐ Г±ГІГ ГІГјГЁ
 hubs_full.to_parquet('hubs_to_articles_urls.parquet', index=False)
 
-# Разобъём на 5 частей (для более лёгкой обработки общего массива данных)
+# ГђГ Г§Г®ГЎГєВёГ¬ Г­Г  5 Г·Г Г±ГІГҐГ© (Г¤Г«Гї ГЎГ®Г«ГҐГҐ Г«ВёГЈГЄГ®Г© Г®ГЎГ°Г ГЎГ®ГІГЄГЁ Г®ГЎГ№ГҐГЈГ® Г¬Г Г±Г±ГЁГўГ  Г¤Г Г­Г­Г»Гµ)
 urls = hubs_full['URL']
 hubs_parts = utils.split_list(urls, 5)
 
-# Запускаем общий счётчик и блокировку
+# Г‡Г ГЇГіГ±ГЄГ ГҐГ¬ Г®ГЎГ№ГЁГ© Г±Г·ВёГІГ·ГЁГЄ ГЁ ГЎГ«Г®ГЄГЁГ°Г®ГўГЄГі
 global_counter = [0]
 global_lock = asyncio.Lock()
 
 
-# Запускаем функцию обработки статей
+# Г‡Г ГЇГіГ±ГЄГ ГҐГ¬ ГґГіГ­ГЄГ¶ГЁГѕ Г®ГЎГ°Г ГЎГ®ГІГЄГЁ Г±ГІГ ГІГҐГ©
 for i, urls_chunk in enumerate(hubs_parts, 1):
-    print(f"Начинается обработка части {i} из {len(hubs_parts)}")
+    print(f"ГЌГ Г·ГЁГ­Г ГҐГІГ±Гї Г®ГЎГ°Г ГЎГ®ГІГЄГ  Г·Г Г±ГІГЁ {i} ГЁГ§ {len(hubs_parts)}")
     asyncio.run(utils.process_part(urls_chunk, i, global_counter, global_lock))
 
 
-# Создаём итоговый датафрейм из 5 отдельных файлов
+# Г‘Г®Г§Г¤Г ВёГ¬ ГЁГІГ®ГЈГ®ГўГ»Г© Г¤Г ГІГ ГґГ°ГҐГ©Г¬ ГЁГ§ 5 Г®ГІГ¤ГҐГ«ГјГ­Г»Гµ ГґГ Г©Г«Г®Гў
 fin_df = pd.DataFrame()
 for part in range(1, len(hubs_parts)+1):
     df_part = pd.read_parquet(f'articles_part_{part}.parquet')
@@ -59,12 +59,12 @@ for part in range(1, len(hubs_parts)+1):
 
 fin_df.info()
 
-# Находим потерянные при получении статьи (где был Semaphore = 50) URL
-# Сохраняем их и добавляем в итоговый датафрейм
+# ГЌГ ГµГ®Г¤ГЁГ¬ ГЇГ®ГІГҐГ°ГїГ­Г­Г»ГҐ ГЇГ°ГЁ ГЇГ®Г«ГіГ·ГҐГ­ГЁГЁ Г±ГІГ ГІГјГЁ (ГЈГ¤ГҐ ГЎГ»Г« Semaphore = 50) URL
+# Г‘Г®ГµГ°Г Г­ГїГҐГ¬ ГЁГµ ГЁ Г¤Г®ГЎГ ГўГ«ГїГҐГ¬ Гў ГЁГІГ®ГЈГ®ГўГ»Г© Г¤Г ГІГ ГґГ°ГҐГ©Г¬
 url_dif = list(set(urls) - set(fin_df['URL']))
 missed_articles = asyncio.run(utils.parse_article(url_dif, global_counter, global_lock))
 missed_articles.to_parquet('missed_articles.parquet', index=False)
 fin_df = pd.concat([fin_df, missed_articles], ignore_index=True)
 
-# Сохранение итогов
+# Г‘Г®ГµГ°Г Г­ГҐГ­ГЁГҐ ГЁГІГ®ГЈГ®Гў
 fin_df.to_parquet('habr_articles_parsed_final.parquet', index=False)
